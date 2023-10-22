@@ -1,0 +1,101 @@
+---
+title: "322_Project1"
+output: html_document
+date: "2023-10-21"
+---
+
+```{r setup, include=FALSE}
+library(dplyr)
+library(survey)
+library(readr)
+library(pps)
+```
+
+```{r}
+merge_final_v3 <- read_csv("merge_final_v3.csv")
+```
+
+#stratification based on state
+```{r cars}
+H = 51  # number of strata = state
+N = 3143 # total number of counties in the US
+n = 300 # total number of sample size
+merge_final_v3$num_sample_county = (merge_final_v3$num_county / N) * 300 # this is n_h
+merge_final_v3$num_sample_county = round(merge_final_v3$num_sample_county)
+```
+
+
+#create unique identifier for county
+```{r}
+merge_final_v3 <- merge_final_v3 %>%                                       
+  group_by(state) %>%
+  mutate(state_id = cur_group_id())
+
+merge_final_v3<- merge_final_v3 %>% group_by(state) %>% mutate(count = sequence(n()))
+
+merge_final_v3$county_id = 1000 * merge_final_v3$state_id + merge_final_v3$count
+```
+
+#Proportional allocation based on size
+```{r cars}
+merge_final_v3$weights = merge_final_v3$pop_state / (merge_final_v3$num_sample_county * merge_final_v3$pop_county)  
+# weights = t_x / (n*x_i)
+```
+
+```{r}
+set.seed(0)
+merge_final_v3 <- merge_final_v3 %>% filter(num_sample_county != 0) #drop states that have a sample size of 0
+
+sort_str<-merge_final_v3[order(merge_final_v3$state),] # sort by stratum
+num_sample_county_vector <- c(6,3,1,7,6,6,1,6,15,4,10,9,9,10,11,6,2,2,1,8,8,8,11,5,9,2,1,2,3,6,10,5,8,7,3,6,4,6,9,24,3,1,13,4,5,7,2)
+sample_data <- sort_str[ppssstrat(sort_str$pop_county,sort_str$state,num_sample_county_vector),]
+```
+
+
+```{r}
+svydes = svydesign(id =~ county_id, strata =~ state, weights =~ weights,  fpc = ~num_county, data = sample_data)
+options(survey.lonely.psu="adjust")
+```
+
+1. What is an estimate of the average population density per county in the U.S. in 2020?
+
+```{r}
+svymean(~ pop_county, svydes)
+```
+
+2. What is an estimate of the total number of people in the U.S. in 2020 who identify as Hispanic or Latino, any race?
+
+```{r}
+svytotal(~ total_hispanic_2020, svydes)
+```
+
+3. What is an estimate of the total change in the number of people in the U.S. who identify as Hispanic or Latino, any race, between the 2010 and 2020 censuses?
+
+```{r}
+sample_data2 <- sample_data %>% mutate(hispanic_diff = total_hispanic_2020 - total_hispanic_2010)
+sample_data2$hispanic_diff[is.na(sample_data2$hispanic_diff)] = 0
+svydes2 <- svydesign(id =~ county_id, strata =~ state, weights =~ weights,  fpc = ~num_county, data = sample_data2)
+svytotal(~ hispanic_diff, svydes2)
+```
+
+4. What are estimates of the percentages of people in 2020 in the U.S. who voted Republican? How about Democrat? How about a third party?
+
+```{r}
+svytotal(~rep_vote, svydes)
+total_pop <- sum(merge_final_v3$pop_county)
+88186122 / total_pop
+```
+
+```{r}
+svytotal(~dem_vote, svydes)
+64853308 / total_pop
+```
+
+```{r}
+third_vote <- total_pop - 88186122 - 64853308
+third_vote / total_pop
+```
+
+5. Answer one other question that interests you from the data that you could collect from the website.
+
+
