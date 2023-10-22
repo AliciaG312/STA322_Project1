@@ -12,7 +12,7 @@ library(pps)
 ```
 
 ```{r}
-merge_final_v3 <- read_csv("merge_final_v3.csv")
+merge_final_v3 <- read_csv("merge_final_v4.csv")
 ```
 
 #stratification based on state
@@ -37,7 +37,7 @@ merge_final_v3$county_id = 1000 * merge_final_v3$state_id + merge_final_v3$count
 ```
 
 #Proportional allocation based on size
-```{r cars}
+```{r}
 merge_final_v3$weights = merge_final_v3$pop_state / (merge_final_v3$num_sample_county * merge_final_v3$pop_county)  
 # weights = t_x / (n*x_i)
 ```
@@ -53,9 +53,11 @@ sample_data <- sort_str[ppssstrat(sort_str$pop_county,sort_str$state,num_sample_
 
 
 ```{r}
-svydes = svydesign(id =~ county_id, strata =~ state, weights =~ weights,  fpc = ~num_county, data = sample_data)
+svydes = svydesign(id =~ county_id, strata =~ state, weights =~ weights, fpc = ~num_county, data = sample_data)
 options(survey.lonely.psu="adjust")
 ```
+
+# Questions
 
 1. What is an estimate of the average population density per county in the U.S. in 2020?
 
@@ -81,21 +83,37 @@ svytotal(~ hispanic_diff, svydes2)
 4. What are estimates of the percentages of people in 2020 in the U.S. who voted Republican? How about Democrat? How about a third party?
 
 ```{r}
+total_vote_pop <- sum(merge_final_v3$vote_pop) # total number of people who voted
+```
+
+```{r}
 svytotal(~rep_vote, svydes)
-total_pop <- sum(merge_final_v3$pop_county)
-88186122 / total_pop
+88186122 / total_vote_pop
 ```
 
 ```{r}
 svytotal(~dem_vote, svydes)
-64853308 / total_pop
+64853308 / total_vote_pop
 ```
 
 ```{r}
-third_vote <- total_pop - 88186122 - 64853308
-third_vote / total_pop
+third_vote <- total_vote_pop - 88186122 - 64853308
+third_vote / total_vote_pop
 ```
 
 5. Answer one other question that interests you from the data that you could collect from the website.
 
+We will estimate percentage of population who did not vote in 2020 election. 
+
+```{r}
+sample_data3 <- sample_data2 %>% mutate(no_vote = pop_county - vote_pop, 
+                                        no_vote_pct = no_vote / pop_county)
+svydes3 <- svydesign(id =~ county_id, strata =~ state, weights =~ weights, fpc = ~num_county, data = sample_data3)
+```
+
+```{r}
+svytotal(~no_vote, svydes3)
+total_pop <- sum(merge_final_v3$pop_county)
+171531886 / total_pop
+```
 
