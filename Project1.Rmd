@@ -1,6 +1,6 @@
 ---
 title: "322_Project1"
-output: html_document
+output: pdf_document
 date: "2023-10-21"
 ---
 
