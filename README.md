@@ -1,6 +1,6 @@
 # STA322_Project1
 
-Project1.pdf is our final written report. Project1.rmd is the r code for this report. merge_final_v4.csv is our final dataset. 
+Project1.pdf is our final written report. Project1.rmd is the r code for this report. "merge_final_v4.csv" is our final dataset. 
 
 The folder raw_data contains all our data sources and data dictionaries. This includes 
 - list of U.S. counties with population and area information "List_of_United_States_counties_and_county_equivalents_1.csv"
