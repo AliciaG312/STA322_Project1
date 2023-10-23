@@ -109,8 +109,9 @@ options(survey.lonely.psu="adjust")
 ### 1. What is an estimate of the average population density per county in the U.S. in 2020?
 
 ```{r}
-svyratio(~pop_county, ~area, design=svydes)
+svyratio(~area, ~pop_county, design=svydes)
 ```
+The average population density per county in the U.S. in 2020 is 52 per $mi^2$.
 
 ### 2. What is an estimate of the total number of people in the U.S. in 2020 who identify as Hispanic or Latino, any race?
 
@@ -118,6 +119,7 @@ svyratio(~pop_county, ~area, design=svydes)
 svytotal(~ total_hispanic_2020, svydes)
 confint(svytotal(~ total_hispanic_2020, svydes))
 ```
+An estimate of 63435246 people in the U.S. in 2020 who identify as Hispanic or Latino.
 
 ### 3. What is an estimate of the total change in the number of people in the U.S. who identify as Hispanic or Latino, any race, between the 2010 and 2020 censuses?
 
@@ -128,6 +130,8 @@ svydes2 <- svydesign(id =~ county_id, strata =~ state, weights =~ weights,  fpc 
 svytotal(~ hispanic_diff, svydes2)
 confint(svytotal(~ hispanic_diff, svydes2))
 ```
+The estimated difference of people in the U.S. who identify as Hispanic or Latino between 2010 and 2020 is 11217022.
+
 
 ### 4. What are estimates of the percentages of people in 2020 in the U.S. who voted Republican? How about Democrat? How about a third party?
 
@@ -142,9 +146,12 @@ confint(svyratio(~rep_vote, ~total_vote_pop, svydes))
 svyratio(~dem_vote, ~total_vote_pop, svydes)
 confint(svyratio(~dem_vote, ~total_vote_pop, svydes))
 ```
+
 ```{r}
 svyratio(~third_vote, ~total_vote_pop, svydes)
 ```
+
+An estimate of 56.3% of the votes in 2020 Presidential Election were for Republican, 42% were for Democratic, and 1.7% were for third party. 
 
 ### 5. Answer one other question that interests you from the data that you could collect from the website.
 
@@ -159,9 +166,11 @@ svydes3 <- svydesign(id =~ county_id, strata =~ state, weights =~ weights, fpc =
 ```{r}
 svytotal(~no_vote, svydes3)
 confint(svytotal(~no_vote, svydes3))
-total_pop <- sum(source_data$pop_county)
+total_pop <- sum(source_data1$pop_county)
 171531886 / total_pop
 ```
+
+About 170903041 people didn't vote in 2020, and that's about 52% of the whole population.
 
 We area also interested in the total population per county.
 
@@ -169,3 +178,5 @@ We area also interested in the total population per county.
 svymean(~ pop_county, svydes)
 confint(svymean(~ pop_county, svydes))
 ```
+
+An estimated total population per county is 104980.
