@@ -38,7 +38,7 @@ All the county level population data, except Connecticut's, are from the [2020 d
 The county level Hispanic population data in 2020 and 2010 are downloaded from U.S. Census Bureau's [website](https://data.census.gov/all?q=hispanic+population&g=010XX00US$0500000).
 
 ### 2020 Presidential Election
-The county level voting data, except Alaska's, are collected from [Politico](https://www.politico.com/2020-election/results/). Alaska's county level data are collected from each county's Wikipedia page.
+The county level voting data, except Alaska's, are collected from [Politico](https://www.politico.com/2020-election/results/). Alaska's county level data are collected from each county's Wikipedia page. The total voting population is calculated by using number of votes divided by percentage of votes.
 
 ### Area
 The data on county area in $\ mi^2$ are collected from the [2020 decennial population census](https://en.wikipedia.org/wiki/List_of_United_States_counties_and_county_equivalents). Connecticut's county level area data are collected separately from [National Association of Counties](https://en.wikipedia.org/wiki/List_of_United_States_counties_and_county_equivalents)
